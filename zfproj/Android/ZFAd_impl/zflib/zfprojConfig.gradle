@@ -1,0 +1,35 @@
+buildscript {
+    repositories {
+        maven {
+            url "https://artifact.bytedance.com/repository/pangle"
+        }
+        google()
+        jcenter()
+    }
+    dependencies {
+        classpath "com.android.tools.build:gradle:4.0.1"
+        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.20'
+    }
+}
+allprojects {
+    repositories {
+        maven {
+            url "https://artifact.bytedance.com/repository/pangle"
+        }
+        google()
+        jcenter()
+    }
+}
+dependencies {
+    implementation 'androidx.appcompat:appcompat:1.7.1'
+
+    // require maven url: https://artifact.bytedance.com/repository/pangle
+    implementation 'com.pangle_beta.cn:mediation-sdk:7.2.0.9'
+    implementation 'com.pangle_beta.cn:mediation-test-tools:7.2.0.9'
+    implementation 'com.pangle_beta.cn:mediation-gdt-adapter:4.660.1530.1'
+    implementation 'com.pangle_beta.cn:mediation-baidu-adapter:9.423.1'
+    implementation 'com.pangle_beta.cn:mediation-ks-adapter:4.9.20.1.1'
+    implementation 'com.pangle_beta.cn:mediation-admob-adapter:17.2.0.71'
+    implementation 'com.pangle_beta.cn:mediation-sigmob-adapter:4.24.0.0'
+}
+
