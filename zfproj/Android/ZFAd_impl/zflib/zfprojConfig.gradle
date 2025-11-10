@@ -20,6 +20,13 @@ allprojects {
         jcenter()
     }
 }
+android {
+    sourceSets {
+        main {
+            res.srcDirs += this.projectDir.getAbsolutePath() + '/../../../../../../ZFFramework/ZFModule/ZFAd_impl/zfproj/Android/ZFAd_impl/zflib/src/main/res'
+        }
+    }
+}
 dependencies {
     implementation 'androidx.appcompat:appcompat:1.7.1'
 
