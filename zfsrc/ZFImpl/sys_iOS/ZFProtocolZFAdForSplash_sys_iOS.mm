@@ -12,6 +12,7 @@
 @property (nonatomic, strong) GDTSplashAd *impl;
 @property (nonatomic, assign) zfbool appIdUpdateFinish;
 @property (nonatomic, assign) zfbool loadFinish;
+@property (nonatomic, assign) zfbool displayFinish;
 @property (nonatomic, assign) zfautoT<ZFTaskId> appIdUpdateTaskId;
 @end
 @implementation _ZFP_ZFImpl_sys_iOS_ZFAdForSplash
@@ -59,7 +60,7 @@
 #if _ZFP_ZFImpl_sys_iOS_ZFAdForSplash_DEBUG
     ZFLogTrim("%s onCloseEnd", self.ad.get());
 #endif
-    ZFPROTOCOL_ACCESS(ZFAdForSplash)->notifyAdOnStop(self.ad, v_ZFResultType::e_Cancel);
+    ZFPROTOCOL_ACCESS(ZFAdForSplash)->notifyAdOnStop(self.ad, self.displayFinish ? v_ZFResultType::e_Success : v_ZFResultType::e_Cancel);
 }
 - (void)splashAdWillPresentFullScreenModal:(GDTSplashAd *)splashAd {
 #if _ZFP_ZFImpl_sys_iOS_ZFAdForSplash_DEBUG
@@ -86,6 +87,9 @@
 #if _ZFP_ZFImpl_sys_iOS_ZFAdForSplash_DEBUG
     ZFLogTrim("%s onTimer: %s", self.ad.get(), (zfuint)time);
 #endif
+    if(time == 0) {
+        self.displayFinish = zftrue;
+    }
     ZFPROTOCOL_ACCESS(ZFAdForSplash)->notifyAdOnTimer(self.ad, (zftimet)(time * 1000));
 }
 @end
