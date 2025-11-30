@@ -1,7 +1,7 @@
 #include "ZFImpl_sys_iOS_ZFAd_impl.h"
 #include "ZFAd/protocol/ZFProtocolZFAdForBanner.h"
 
-#define _ZFP_ZFImpl_sys_iOS_ZFAdForBanner_DEBUG 1
+// #define _ZFP_ZFImpl_sys_iOS_ZFAdForBanner_DEBUG 1
 
 #if ZF_ENV_sys_iOS
 
@@ -21,9 +21,9 @@
 }
 - (void)unifiedBannerViewFailedToLoad:(GDTUnifiedBannerView *)unifiedBannerView error:(NSError *)error {
 #if _ZFP_ZFImpl_sys_iOS_ZFAdForBanner_DEBUG
-    ZFLogTrim("%s onError: %s", self.ad.get(), error.description.UTF8String);
+    ZFLogTrim("%s onError: %s", self.ad.get(), ZFImpl_sys_iOS_zfstringFromNSString(error.description));
 #endif
-    ZFPROTOCOL_ACCESS(ZFAdForBanner)->notifyAdOnError(self.ad, error.description.UTF8String);
+    ZFPROTOCOL_ACCESS(ZFAdForBanner)->notifyAdOnError(self.ad, ZFImpl_sys_iOS_zfstringFromNSString(error.description));
 }
 - (void)unifiedBannerViewWillExpose:(GDTUnifiedBannerView *)unifiedBannerView {
 #if _ZFP_ZFImpl_sys_iOS_ZFAdForBanner_DEBUG
@@ -116,7 +116,7 @@ public:
     }
 
     zfoverride
-    virtual void appIdUpdate(ZF_IN ZFAdForBanner *ad) {
+    virtual void nativeAdUpdate(ZF_IN ZFAdForBanner *ad) {
         _ZFP_ZFImpl_sys_iOS_ZFAdForBanner *nativeAd = (__bridge _ZFP_ZFImpl_sys_iOS_ZFAdForBanner *)ad->nativeAd();
         if(nativeAd.appIdUpdateTaskId) {
             nativeAd.appIdUpdateTaskId->stop();
@@ -124,8 +124,19 @@ public:
         ZFLISTENER_1(onFinish
                 , zfweakT<ZFAdForBanner>, ad
                 ) {
-            if(!ad) {
-                return;
+            ZFCoreAssert(ad);
+            v_ZFResultType *resultType = zfargs.param0();
+            switch(resultType->zfv()) {
+                case v_ZFResultType::e_Success:
+                    break;
+                case v_ZFResultType::e_Fail:
+                    ZFPROTOCOL_ACCESS(ZFAdForBanner)->notifyAdOnError(ad, zfargs.param1().to<v_zfstring *>()->zfv);
+                    return;
+                case v_ZFResultType::e_Cancel:
+                    return;
+                default:
+                    ZFCoreCriticalShouldNotGoHere();
+                    return;
             }
             _ZFP_ZFImpl_sys_iOS_ZFAdForBanner *nativeAd = (__bridge _ZFP_ZFImpl_sys_iOS_ZFAdForBanner *)ad->nativeAd();
             if(nativeAd) {
@@ -137,13 +148,6 @@ public:
             }
         } ZFLISTENER_END()
         nativeAd.appIdUpdateTaskId = ZFImpl_sys_iOS_ZFAd_appId(ad->appId(), onFinish);
-    }
-    zfoverride
-    virtual void adIdUpdate(ZF_IN ZFAdForBanner *ad) {
-        _ZFP_ZFImpl_sys_iOS_ZFAdForBanner *nativeAd = (__bridge _ZFP_ZFImpl_sys_iOS_ZFAdForBanner *)ad->nativeAd();
-        if(ad->adId() && nativeAd.appIdUpdateFinish) {
-            _load(ad, nativeAd);
-        }
     }
 
 private:
@@ -160,7 +164,7 @@ private:
         }
         nativeAd.impl = [[GDTUnifiedBannerView alloc]
                 initWithFrame:nativeAd.bounds
-                placementId:[NSString stringWithUTF8String:ad->adId().cString()]
+                placementId:ZFImpl_sys_iOS_zfstringToNSString(ad->adId())
                 viewController:ZFImpl_sys_iOS_rootWindow().rootViewController
                 ];
         [nativeAd addSubview:nativeAd.impl];

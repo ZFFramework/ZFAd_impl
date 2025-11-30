@@ -10,11 +10,15 @@
 #include <UIKit/UIKit.h>
 #include "ZFCore.h"
 #include "ZFImpl/sys_iOS/ZFMainEntry_sys_iOS.h"
+#include "ZFImpl/sys_iOS/ZFImpl_sys_iOS_ZFUIKit_impl.h"
 
 ZF_NAMESPACE_GLOBAL_BEGIN
 
 /**
  * @brief update app id, assert fail if alreay set a different one
+ *
+ * callback's param0 is a #v_ZFResultType indicates result,
+ * param1 is a #v_zfstring indicates error hint
  */
 extern ZFLIB_ZFAd_impl zfautoT<ZFTaskId> ZFImpl_sys_iOS_ZFAd_appId(
         ZF_IN const zfstring &appId
